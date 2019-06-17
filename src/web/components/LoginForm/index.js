@@ -1,0 +1,41 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { useForm, useField } from 'react-final-form-hooks';
+import TextInput from '../ui/TextInput/index';
+import Button from '../ui/Button/index';
+import { Wrapper, Form, InputWrapper } from './styles';
+
+const LoginForm = ({ onSubmit }) => {
+    const { form, handleSubmit } = useForm({
+        onSubmit({ username }) {
+            onSubmit(username);
+        }
+    });
+
+    const username = useField('username', form);
+
+    return (
+        <Wrapper>
+            <Form onSubmit={handleSubmit}>
+                <InputWrapper>
+                    <TextInput
+                        label="Select your Username"
+                        required
+                        autoComplete="off"
+                        {...username.input}
+                    />
+                </InputWrapper>
+                <Button type="submit" disabled={!username.input.value}>
+                    <span role="img" aria-label="nique sa mere l'a11y">
+                        🚀
+                    </span>
+                    Connect
+                </Button>
+            </Form>
+        </Wrapper>
+    );
+};
+LoginForm.propTypes = {
+    onSubmit: PropTypes.func.isRequired
+};
+export default LoginForm;
