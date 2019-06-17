@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "cross-env NODE_ENV=development nodemon src/index.js",
         "prod": "next build src/web",
-        "start": "node src/index.js"
+        "start": "node src/index.js",
+        "prestart": "npm run prod"
     },
     "keywords": [],
     "author": "",
