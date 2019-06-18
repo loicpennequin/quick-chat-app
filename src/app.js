@@ -2,8 +2,10 @@ const express = require('express');
 const http = require('http');
 const websockets = require('./websockets');
 const web = require('./web/app');
+const compression = require('compression');
 
 const app = express();
+app.use(compression());
 const server = http.createServer(app);
 
 app.start = async cb => {
