@@ -1,5 +1,8 @@
 export default {
-    APP_URL: `${process.env.APP_URL}:${process.env.PORT}`,
+    APP_URL:
+        process.env.NODE_ENV === 'production'
+            ? 'https://daria-quick-chat-app.herokuapp.com'
+            : 'http://localhost:8000',
     ROLES: {
         SYSTEM: 'System'
     },
