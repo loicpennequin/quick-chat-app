@@ -5,27 +5,28 @@ import formatDate from '../../../../util/formatDate';
 import { UserWrapper, SystemWrapper, Author } from './styles';
 
 const messagePropTypes = {
-    message: PropTypes.object.isRequired
+    message: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired
 };
 
-const Message = ({ message }) => {
+const Message = ({ message, id }) => {
     return message.author === constants.ROLES.SYSTEM ? (
-        <SystemMessage message={message} />
+        <SystemMessage message={message} id={id} />
     ) : (
-        <UserMessage message={message} />
+        <UserMessage message={message} id={id} />
     );
 };
 Message.propTypes = messagePropTypes;
 
-const UserMessage = ({ message: { timestamp, author, text } }) => (
-    <UserWrapper>
+const UserMessage = ({ message: { timestamp, author, text }, id }) => (
+    <UserWrapper id={id}>
         ({formatDate(timestamp)}) <Author>{author}</Author> : {text}
     </UserWrapper>
 );
 UserMessage.propTypes = messagePropTypes;
 
-const SystemMessage = ({ message: { text } }) => (
-    <SystemWrapper>{text}</SystemWrapper>
+const SystemMessage = ({ message: { text }, id }) => (
+    <SystemWrapper id={id}>{text}</SystemWrapper>
 );
 SystemMessage.propTypes = messagePropTypes;
 

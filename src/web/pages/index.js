@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import Head from 'next/head';
 import useUser from './../hooks/useUser.js';
 import LoginForm from './../components/LoginForm';
 import Chatroom from './../components/Chatroom';
@@ -16,9 +17,18 @@ const Home = () => {
     );
 
     return (
-        <Main>
-            {connected ? <Chatroom /> : <LoginForm onSubmit={handleSubmit} />}
-        </Main>
+        <>
+            <Head>
+                <title>Chat App</title>
+            </Head>
+            <Main>
+                {connected ? (
+                    <Chatroom />
+                ) : (
+                    <LoginForm onSubmit={handleSubmit} />
+                )}
+            </Main>
+        </>
     );
 };
 

@@ -12,6 +12,7 @@ const MessageForm = () => {
     const { form, handleSubmit } = useForm({
         onSubmit({ message }) {
             sendPublicMessage({ text: message, author: username });
+            form.reset();
         }
     });
 

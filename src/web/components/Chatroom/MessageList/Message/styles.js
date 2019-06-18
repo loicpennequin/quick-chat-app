@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const BaseWrapper = styled.div`
-    padding: ${({ theme }) => theme.spacing.xs};
+    padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.xs}`};
 `;
 
 const SystemWrapper = styled(BaseWrapper)`

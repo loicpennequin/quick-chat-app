@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "cross-env NODE_ENV=development nodemon src/index.js",
         "prod": "next build src/web",
-        "start": "node src/index.js",
+        "start": "cross-env NODE_ENV=production node src/index.js",
         "heroku-postbuild": "npm run prod"
     },
     "keywords": [],
