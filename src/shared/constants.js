@@ -1,5 +1,5 @@
 export default {
-    APP_URL: 'http://localhost:8000',
+    APP_URL: `${process.env.APP_URL}:${process.env.PORT}`,
     ROLES: {
         SYSTEM: 'System'
     },
