@@ -1,5 +1,5 @@
-import express from 'express';
-import next from 'next';
+const express = require('express');
+const next = require('next');
 
 const app = express();
 const nextApp = next({
@@ -21,4 +21,4 @@ app.start = async () => {
     }
 };
 
-export default app;
+module.exports = app;
