@@ -1,10 +1,12 @@
 const withImages = require('next-images');
+const { parsed: localEnv } = require('dotenv').config();
 
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const webpack = require('webpack');
 
 const config = {
     webpack(config, options) {
+        config.plugins.push(new webpack.EnvironmentPlugin(localEnv));
         config.plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']));
         config.plugins = config.plugins.filter(
             plugin => plugin.constructor.name !== 'FriendlyErrorsWebpackPlugin'
