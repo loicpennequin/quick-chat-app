@@ -15,7 +15,6 @@ export default function useUser() {
 
     const onConnection = useCallback(
         (username, resolve) => {
-            console.log(username);
             function onSuccess() {
                 dispatch({ type: SET_CONNECTED, connected: true });
                 dispatch({ type: SET_USERNAME, username });
