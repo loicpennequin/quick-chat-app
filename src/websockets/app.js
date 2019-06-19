@@ -34,14 +34,24 @@ app.start = server => {
 
         socket.on(SOCKET_EVENTS.ADD_USER, username => {
             logger.on(SOCKET_EVENTS.ADD_USER);
+            const exists = ~Object.values(connectedUsers).indexOf(username);
+            if (exists) {
+                logger.emit(
+                    `${SOCKET_EVENTS.USERNAME_UNAVAILABLE}, ${username}`
+                );
+                socket.emit(SOCKET_EVENTS.USERNAME_UNAVAILABLE);
+            } else {
+                connectedUsers[socket.id] = username;
 
-            connectedUsers[socket.id] = username;
+                logger.emit(SOCKET_EVENTS.USERNAME_AVAILABLE);
+                socket.emit(SOCKET_EVENTS.USERNAME_AVAILABLE);
 
-            logger.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE);
-            socket.broadcast.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE, {
-                author: ROLES.SYSTEM,
-                text: `${username} joined the channel.`
-            });
+                logger.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE);
+                socket.broadcast.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE, {
+                    author: ROLES.SYSTEM,
+                    text: `${username} joined the channel.`
+                });
+            }
         });
 
         socket.on(SOCKET_EVENTS.DISCONNECTION, () => {

@@ -7,40 +7,62 @@ import { SET_USERNAME, SET_CONNECTED } from './../store/actionTypes.js';
 const { SOCKET_EVENTS } = constants;
 
 export default function useUser() {
-    const { connect, disconnect, on, off, emit } = useWebsockets({
+    const { connect, disconnect, on, emit, cleanup } = useWebsockets({
         autoConnect: false
     });
     const { username, connected } = useSelector(state => state.user);
     const dispatch = useDispatch();
 
-    const onConnection = useCallback(() => {
-        const onDisconnect = () => {
-            dispatch({ type: SET_CONNECTED, connected: false });
+    const onConnection = useCallback(
+        resolve => {
+            function onSuccess() {
+                dispatch({ type: SET_CONNECTED, connected: true });
+                resolve(true);
+            }
+            function onError() {
+                dispatch({ type: SET_CONNECTED, connected: false });
+                dispatch({ type: SET_USERNAME, username: undefined });
+                resolve(false);
+            }
 
-            off(SOCKET_EVENTS.CONNECTION_SUCCESS, onConnection);
-            off(SOCKET_EVENTS.DISCONNECTION, onDisconnect);
-        };
+            const onDisconnect = () => {
+                dispatch({ type: SET_CONNECTED, connected: false });
+                cleanup();
+            };
 
-        dispatch((dispatch, getState) => {
-            dispatch({ type: SET_CONNECTED, connected: true });
-            emit(SOCKET_EVENTS.ADD_USER, getState().user.username);
-        });
+            dispatch((dispatch, getState) => {
+                emit(SOCKET_EVENTS.ADD_USER, getState().user.username);
 
-        on(SOCKET_EVENTS.DISCONNECTION, onDisconnect);
-    }, [dispatch, emit, off, on]);
+                on(SOCKET_EVENTS.USERNAME_AVAILABLE, onSuccess);
+                on(SOCKET_EVENTS.USERNAME_UNAVAILABLE, onError);
+            });
+
+            on(SOCKET_EVENTS.DISCONNECTION, onDisconnect);
+        },
+        [cleanup, dispatch, emit, on]
+    );
 
     return {
         username,
         connected,
 
         connect(username) {
-            connect();
-            dispatch({ type: SET_USERNAME, username });
-            on(SOCKET_EVENTS.CONNECTION_SUCCESS, onConnection);
+            return new Promise(resolve => {
+                connect();
+                dispatch({ type: SET_USERNAME, username });
+                function onConnect() {
+                    onConnection(resolve);
+                }
+                on(SOCKET_EVENTS.CONNECTION_SUCCESS, onConnect);
+            });
         },
 
         disconnect() {
             disconnect();
+        },
+
+        onUnknownUsername(cb) {
+            on(SOCKET_EVENTS.USERNAME_UNAVAILABLE, cb);
         }
     };
 }

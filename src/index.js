@@ -6,6 +6,6 @@ require('dotenv').config();
 
 const app = require('./app.js');
 
-app.start(() => {
+app.default.start(() => {
     console.log(`Server ready on port ${process.env.PORT}`);
 });

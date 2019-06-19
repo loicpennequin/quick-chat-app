@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import { useForm, useField } from 'react-final-form-hooks';
 import TextInput from '../ui/TextInput/index';
 import Button from '../ui/Button/index';
-import { Wrapper, Form, InputWrapper } from './styles';
+import { Wrapper, Form, InputWrapper, Error } from './styles';
 
 const LoginForm = ({ onSubmit }) => {
     const { form, handleSubmit } = useForm({
-        onSubmit({ username }) {
-            onSubmit(username);
+        async onSubmit({ username }) {
+            const errors = await onSubmit(username);
+            return errors;
         }
     });
-
     const username = useField('username', form);
 
     return (
@@ -25,6 +25,9 @@ const LoginForm = ({ onSubmit }) => {
                         {...username.input}
                     />
                 </InputWrapper>
+                {username.meta.submitError && (
+                    <Error>{username.meta.submitError}</Error>
+                )}
                 <Button type="submit" disabled={!username.input.value}>
                     <span role="img" aria-label="nique sa mere l'a11y">
                         🚀

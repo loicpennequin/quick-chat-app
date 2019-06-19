@@ -10,10 +10,12 @@ let socket = io(constants.APP_URL, {
 export default function useWebsockets({ autoConnect = true } = {}) {
     const _subscriptions = useRef([]);
 
-    const _cleanup = useCallback(() => {
+    const cleanup = useCallback(() => {
         if (_subscriptions.current.length > 0) {
             _subscriptions.current.forEach(subscription => {
-                if (socket) socket.off(...subscription);
+                if (socket) {
+                    socket.off(...subscription);
+                }
             });
             _subscriptions.current = [];
         }
@@ -21,9 +23,9 @@ export default function useWebsockets({ autoConnect = true } = {}) {
 
     useEffect(
         () => () => {
-            _cleanup();
+            cleanup();
         },
-        [_cleanup]
+        [cleanup]
     );
 
     const connect = useCallback(() => {
@@ -72,6 +74,7 @@ export default function useWebsockets({ autoConnect = true } = {}) {
         disconnect,
         emit,
         on,
-        off
+        off,
+        cleanup
     };
 }

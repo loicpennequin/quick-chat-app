@@ -13,6 +13,8 @@ export default {
         ADD_USER: 'add user',
         GET_USERS: 'get users',
         NEW_PUBLIC_MESSAGE: 'new public message',
-        GET_ALL_MESSAGES: 'get all messages'
+        GET_ALL_MESSAGES: 'get all messages',
+        USERNAME_UNAVAILABLE: 'username unavailable',
+        USERNAME_AVAILABLE: 'username available'
     }
 };

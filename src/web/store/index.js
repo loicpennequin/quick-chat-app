@@ -3,7 +3,10 @@ import thunk from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import reducer from './reducers';
 
-export default function initStore(preloadedState, debug = true) {
+export default function initStore(
+    preloadedState,
+    debug = process.env.NODE_ENV !== 'production'
+) {
     const logger = createLogger({
         collapsed: (getState, action, logEntry) => !logEntry.error,
         predicate: (getState, action) => !action._muted,

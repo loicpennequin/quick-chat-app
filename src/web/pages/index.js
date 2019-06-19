@@ -10,8 +10,11 @@ import { linearGradient } from 'polished';
 const Home = () => {
     const { connected, connect } = useUser();
     const handleSubmit = useCallback(
-        username => {
-            connect(username);
+        async username => {
+            const valid = await connect(username);
+            if (!valid) {
+                return { username: 'This username is already taken.' };
+            }
         },
         [connect]
     );
