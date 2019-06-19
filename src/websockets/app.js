@@ -27,6 +27,11 @@ app.start = server => {
     const connectedUsers = {};
     const messages = [];
 
+    const usernameExists = username =>
+        ~Object.values(connectedUsers).indexOf(username);
+    const socketIdExists = socketId =>
+        ~Object.keys(connectedUsers).indexOf(socketId);
+
     const io = socketio.listen(server);
 
     io.on(SOCKET_EVENTS.CONNECTION, socket => {
@@ -34,8 +39,8 @@ app.start = server => {
 
         socket.on(SOCKET_EVENTS.ADD_USER, username => {
             logger.on(SOCKET_EVENTS.ADD_USER);
-            const exists = ~Object.values(connectedUsers).indexOf(username);
-            if (exists) {
+
+            if (usernameExists(username)) {
                 logger.emit(
                     `${SOCKET_EVENTS.USERNAME_UNAVAILABLE}, ${username}`
                 );
@@ -57,15 +62,17 @@ app.start = server => {
         socket.on(SOCKET_EVENTS.DISCONNECTION, () => {
             logger.on(SOCKET_EVENTS.DISCONNECTION);
 
-            logger.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE);
-            socket.broadcast.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE, {
-                author: 'System',
-                text: `${connectedUsers[socket.id]} left the channel.`
-            });
-            delete connectedUsers[socket.id];
+            if (socketIdExists(socket.id)) {
+                logger.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE);
+                socket.broadcast.emit(SOCKET_EVENTS.NEW_PUBLIC_MESSAGE, {
+                    author: 'System',
+                    text: `${connectedUsers[socket.id]} left the channel.`
+                });
+                delete connectedUsers[socket.id];
 
-            logger.emit(SOCKET_EVENTS.GET_USERS);
-            io.emit(SOCKET_EVENTS.GET_USERS, Object.values(connectedUsers));
+                logger.emit(SOCKET_EVENTS.GET_USERS);
+                io.emit(SOCKET_EVENTS.GET_USERS, Object.values(connectedUsers));
+            }
         });
 
         socket.on(SOCKET_EVENTS.GET_USERS, () => {

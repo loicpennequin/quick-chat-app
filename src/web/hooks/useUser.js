@@ -14,32 +14,32 @@ export default function useUser() {
     const dispatch = useDispatch();
 
     const onConnection = useCallback(
-        resolve => {
+        (username, resolve) => {
+            console.log(username);
             function onSuccess() {
                 dispatch({ type: SET_CONNECTED, connected: true });
+                dispatch({ type: SET_USERNAME, username });
                 resolve(true);
             }
             function onError() {
-                dispatch({ type: SET_CONNECTED, connected: false });
-                dispatch({ type: SET_USERNAME, username: undefined });
+                disconnect();
                 resolve(false);
             }
 
             const onDisconnect = () => {
+                dispatch({ type: SET_USERNAME });
                 dispatch({ type: SET_CONNECTED, connected: false });
                 cleanup();
             };
 
-            dispatch((dispatch, getState) => {
-                emit(SOCKET_EVENTS.ADD_USER, getState().user.username);
+            emit(SOCKET_EVENTS.ADD_USER, username);
 
-                on(SOCKET_EVENTS.USERNAME_AVAILABLE, onSuccess);
-                on(SOCKET_EVENTS.USERNAME_UNAVAILABLE, onError);
-            });
+            on(SOCKET_EVENTS.USERNAME_AVAILABLE, onSuccess);
+            on(SOCKET_EVENTS.USERNAME_UNAVAILABLE, onError);
 
             on(SOCKET_EVENTS.DISCONNECTION, onDisconnect);
         },
-        [cleanup, dispatch, emit, on]
+        [cleanup, disconnect, dispatch, emit, on]
     );
 
     return {
@@ -49,9 +49,8 @@ export default function useUser() {
         connect(username) {
             return new Promise(resolve => {
                 connect();
-                dispatch({ type: SET_USERNAME, username });
                 function onConnect() {
-                    onConnection(resolve);
+                    onConnection(username, resolve);
                 }
                 on(SOCKET_EVENTS.CONNECTION_SUCCESS, onConnect);
             });
